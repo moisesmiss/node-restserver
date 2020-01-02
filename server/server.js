@@ -1,32 +1,24 @@
 require('./config/config')
 
 const express = require('express')
-const app = express()
 const bodyParser = require('body-parser')
+const mongoose = require('mongoose')
 
+const app = express()
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
- 
-app.get('/', function (req, res) {
-  res.json('Hello World')
-})
+app.use(require('./routes/usuario'))
 
-app.post('/user', function(req, res){
-    let body = req.body
-    if(body.nombre === undefined){
-        res.status(400).send({
-            message: 'Bad Request, field name cannot be empty'
-        });
+mongoose.connect(`mongodb://localhost:27017/cafe`, 
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }, 
+    (err) => {
+        if(err) throw err;
+        console.log('database connected')
     }
-    res.json(body)
-})
-
-app.put('/user/:id', function(req, res){
-    let id = req.params.id
-    res.json({
-        id,
-    })
-})
+)
  
 app.listen(process.env.PORT, () => {
     console.log('listen port', process.env.PORT)
